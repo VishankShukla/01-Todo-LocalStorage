@@ -18,24 +18,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     tasks.push(newTask);
     saveTask();
+    renderTask(newTask);
     todoInput.value = "";
     console.log(tasks);
+  });
+
+  todoInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      addTaskButton.click();
+    }
   });
 
   function renderTask(task) {
     const li = document.createElement("li");
     li.setAttribute("data-id", task.id);
-    if(task.completed) li.classList.add("completed");
+    if (task.completed) li.classList.add("completed");
     li.innerHTML = `
-    <span>${task.text}</span>
+    <span class="task-text">${task.text}</span>
     <button id="delete-btn">Delete</button>
     `;
-    li.addEventListener('click',(e) => {
-        if(e.target.tagName === 'BUTTON') return;
-        task.completed = !task.completed
-        li.classList.toggle('completed')
-        saveTask();
-    })
+    li.addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON") return;
+      task.completed = !task.completed;
+      li.classList.toggle("completed");
+      saveTask();
+    });
+
+    li.querySelector("button").addEventListener("click", (e) => {
+      e.stopPropagation(); //prevent toggle from firing
+      tasks = tasks.filter((t) => t.id !== task.id);
+      li.remove();
+      saveTask();
+    });
     todoList.appendChild(li);
   }
 

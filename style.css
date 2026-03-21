@@ -94,7 +94,7 @@ h1 {
     background: #ff1744;
 }
 
-.completed {
+.completed .task-text {
     text-decoration: line-through;
     opacity: 0.6;
 }
