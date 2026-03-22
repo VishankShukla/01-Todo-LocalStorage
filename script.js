@@ -3,10 +3,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const addTaskButton = document.getElementById("add-task-btn");
   const todoList = document.getElementById("todo-list");
   const clearCompletedBtn = document.getElementById("clear-completed-btn");
+  const clearAllBtn = document.getElementById("clear-all-btn");
 
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   tasks.forEach((task) => renderTask(task));
   toggleClearButton();
+  lengthCheck()
 
   addTaskButton.addEventListener("click", () => {
     let taskText = todoInput.value.trim();
@@ -22,8 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
     saveTask();
     renderTask(newTask);
     toggleClearButton();
+    lengthCheck()
     todoInput.value = "";
-    console.log(tasks);
   });
 
   todoInput.addEventListener("keydown", (e) => {
@@ -44,16 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target.tagName === "BUTTON") return;
       task.completed = !task.completed;
       li.classList.toggle("completed");
-      saveTask();
-      toggleClearButton();
+      updateUI();
     });
 
     li.querySelector("button").addEventListener("click", (e) => {
       e.stopPropagation(); //prevent toggle from firing
       tasks = tasks.filter((t) => t.id !== task.id);
       li.remove();
-      saveTask();
-      toggleClearButton();
+      updateUI();
     });
     todoList.appendChild(li);
   }
@@ -66,9 +66,17 @@ function toggleClearButton() {
   const hasCompleted = tasks.some(task => task.completed);
 
   if (hasCompleted) {
-    clearCompletedBtn.style.display = "block";
+    clearCompletedBtn.style.display = "inline";
   } else {
     clearCompletedBtn.style.display = "none";
+  }
+}
+
+function lengthCheck(){
+  if(tasks.length>0){
+    clearAllBtn.style.display = "inline";
+  } else {
+    clearAllBtn.style.display ="none";
   }
 }
 
@@ -80,5 +88,18 @@ clearCompletedBtn.addEventListener("click", () => {
   tasks.forEach(task => renderTask(task));
 
   toggleClearButton();
+  lengthCheck();
 });
+
+clearAllBtn.addEventListener('click',()=>{
+  if (!confirm("Are you sure you want to delete all tasks?")) return;
+  tasks =[];
+  todoList.innerHTML = "";
+  updateUI();
+});
+function updateUI() {
+  saveTask();
+  toggleClearButton();
+  lengthCheck();
+};
 });
